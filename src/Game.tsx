@@ -1,6 +1,6 @@
 import useGameState from "./useGameState";
 
-function calculateWinner(squares : any) {
+function calculateWinner(squares: any) {
   const lines = [
     [0, 1, 2],
     [3, 4, 5],
@@ -20,7 +20,7 @@ function calculateWinner(squares : any) {
   return null;
 }
 
-function Square({ id, value, onClick } : any) {
+function Square({ id, value, onClick }: any) {
   return (
     <button data-testid={`square-${id}`} className="square" onClick={onClick}>
       {value}
@@ -28,7 +28,18 @@ function Square({ id, value, onClick } : any) {
   );
 }
 
-const Board = ({ squares, onSquareClick } : any) => {
+// Botão para reiniciar o jogo, exibido apenas caso a partida tenha acabado
+function RestartButton({ isVisible, handleRestart }: any) {
+  return isVisible ? (
+    <button data-testid={`restart`} onClick={handleRestart}>
+      Restart
+    </button>
+  ) : (
+    null
+  );
+}
+
+const Board = ({ squares, onSquareClick }: any) => {
   const renderSquare = (squareId: number) => {
     return (
       <Square
@@ -61,11 +72,12 @@ const Board = ({ squares, onSquareClick } : any) => {
 };
 
 const Game: React.FC = () => {
-  const {
-    currentBoard,
-    stepNumber,
-    nextPlayer,
-    computeMove
+  const { 
+    currentBoard, 
+    stepNumber, 
+    nextPlayer, 
+    computeMove, 
+    handleRestart 
   } = useGameState();
 
   const handleSquareClick = (squareId: number) => {
@@ -76,14 +88,19 @@ const Game: React.FC = () => {
     computeMove(nextPlayer, squareId);
   };
 
+  // Função que calcula a exibição do botão restart
+  const shouldShowRestartButton = () =>{
+    return stepNumber === 9 || calculateWinner(currentBoard);
+  }
+
   const renderStatusMessage = () => {
     const winner = calculateWinner(currentBoard);
     if (winner) {
-      return "Winner: " + winner;
+      return "Winner: " + (winner === "X" ? "❌" : "⭕");
     } else if (stepNumber === 9) {
       return "Draw: Game over";
     } else {
-      return "Next player: " + (nextPlayer === 'X' ? "❌" : "⭕");
+      return "Next player: " + (nextPlayer === "X" ? "❌" : "⭕");
     }
   };
 
@@ -102,6 +119,12 @@ const Game: React.FC = () => {
         <div className="game-info">
           <div>Current step: {stepNumber}</div>
           <div>{renderStatusMessage()}</div>
+          <div>
+            <RestartButton
+              isVisible={shouldShowRestartButton()}
+              handleRestart={handleRestart}
+            />
+          </div>
         </div>
       </div>
     </>
