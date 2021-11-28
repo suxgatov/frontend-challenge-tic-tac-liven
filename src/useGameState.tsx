@@ -11,8 +11,13 @@ let currentBoard = Array(9).fill(null);
 const useGameState = () => {
   const [stepNumber, setStepNumber] = useState(0);
 
-  const computeMove = (nextPlayer: Player, squareId: any) => {
-    if (nextPlayer === 'X') {
+  // Nome do parâmetro trocado de nextPlayer para playerMove
+  const computeMove = (playerMove: Player, squareId: any) => {
+
+    // Adiciona a jogada do jogador no quadrado do tabuleiro
+    currentBoard[squareId] = playerMove;
+
+    if (playerMove === 'X') {
       nextPlayer = 'O'
     } else {
       nextPlayer = 'X'
